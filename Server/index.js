@@ -4,10 +4,14 @@ import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import roomRouter from './router/room.route.js';
+import dotenv from 'dotenv'
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+dotenv.config()
+
+const mongoURL = process.env.mongoUrl
 
 app.use("/api/v2/room", roomRouter);
 
@@ -39,7 +43,7 @@ io.on("connection", (socket) => {
   });
 });
 
-mongoose.connect("mongodb://localhost:27017")
+mongoose.connect(mongoURL)
   .then(() => server.listen(5000))
   .then(() => console.log("Connected to MongoDB and Server running on port 5000"))
   .catch((err) => console.log(err));

@@ -6,6 +6,8 @@ import heroImage2 from "../images/hero-image2.png"
 import heroImage4 from "../images/hero-image4.webp"
 import rightTike from "../images/right-tike.png"
 import "../components/Hero.css"
+
+const backendUrl = import.meta.env.BACKEND
  
 function Hero() {
     const [showForm, setShowFrom] = useState(false)
@@ -39,7 +41,7 @@ function Hero() {
     
         if (!joinClick) {
             try {
-                const response = await axios.post('http://localhost:5000/api/v2/room/createroom', {
+                const response = await axios.post(`${backendUrl}/api/v2/room/createroom`, {
                     hostName: userName,
                 });
                 console.log(response.data);
@@ -50,7 +52,7 @@ function Hero() {
             }
         } else {
             try {
-                const response = await axios.post('http://localhost:5000/api/v2/room/joinroom', {
+                const response = await axios.post(`${backendUrl}/api/v2/room/joinroom`, {
                     hostName: userName,
                     roomId: roomId
                 });
