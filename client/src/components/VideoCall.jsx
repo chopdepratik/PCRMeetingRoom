@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams } from 'react-router-dom';
 import io from "socket.io-client";
 
-const socket = io("http://localhost:5000");
+const socket = io("enchanting-cranachan-518bec");
 
 const VideoCall = () => {
   const { roomId } = useParams();
