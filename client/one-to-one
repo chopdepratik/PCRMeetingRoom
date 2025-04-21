@@ -1,0 +1,141 @@
+import React, { useEffect, useRef, useState } from "react";
+import { useParams } from 'react-router-dom';
+import io from "socket.io-client";
+
+const socket = io("http://localhost:5000");
+
+const VideoCall = () => {
+  const { roomId } = useParams();
+  const localVideo = useRef();
+  const remoteVideo = useRef();
+
+  const [remoteSocketId, setRemoteSocketId] = useState(null);
+  const pc = useRef(null);// we can ulso use useState but it will re-render the page
+
+
+  useEffect(() => {
+    // 1. Ask camera & mic permission
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
+      localVideo.current.srcObject = stream;
+
+      //instance of peerconnection
+      pc.current = new RTCPeerConnection(); 
+
+      // Add local stream to connection
+      stream.getTracks().forEach(track => {
+        pc.current.addTrack(track, stream);
+      });
+
+      // Handle remote stream
+      //this trigger when all the connection done offer and answer shared
+      //and runs when a remote peer sends media tracks (like video or audio) to your peer connection.
+      //ice go the path to connet . in simple word it execute at last
+      pc.current.ontrack = (event) => {
+        remoteVideo.current.srcObject = event.streams[0];
+      };
+
+      // Send ICE candidate to other user
+      //this trigger when we write something in local description
+      // this will start to fnd the connecting path of A and
+      //send to the B by emitting
+      pc.current.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit("send-ice-candidate", {
+            candidate: event.candidate,
+            to: remoteSocketId //if user A call then this is B's Soketid else User A's
+          });
+        }
+      };
+    });
+
+    // 2. Join and listen for other users
+    socket.emit("join");
+
+    socket.on("user-joined", (id) => {
+      //this is the other user soket.id
+      setRemoteSocketId(id);
+    });
+
+    socket.on("receive-offer", async ({ offer, from }) => {
+      //offfer receving from the user A
+      //till now user B not had the user A soket.id 
+      //now it has 
+      setRemoteSocketId(from);//set id
+      //User B receives the Offer from User A (containing media info, codec, network config, etc.)
+     // It tells User B’s browser: “This is what the other peer (User A) wants to do”.
+     //So we set it as the remote description.
+      await pc.current.setRemoteDescription(new RTCSessionDescription(offer));
+    //here user some like user accept the offer and create the answer
+    //this answer consist of User B’s media/network info.
+      const answer = await pc.current.createAnswer();
+    //set this as local description, so that browser should
+    //understand what B want to share with A
+      await pc.current.setLocalDescription(answer);
+    // now Ice will call and get the path to connect B
+    //here handshaking is done , now both are connected
+
+    //Sends answer back to User A so the call can start.
+    //the answer consist of user B's connecivity info
+    //and response to offer
+    //insimple word Offer says what I want
+    //Answer says what I can do
+      socket.emit("send-answer", { answer, to: from });
+    });
+
+    socket.on("receive-answer", async ({ answer }) => {
+      //answer send by the user B to user A
+      //then user A set there remote discription as answer
+      //on the basis of answer the connectivity works
+      //Now A knows exactly:
+         //What B accepted (e.g., media type, codec, encryption).
+         //How to send media to B.
+      await pc.current.setRemoteDescription(new RTCSessionDescription(answer));
+      //no at the end
+      //The ontrack event on A triggers when B's media is received.
+    });
+
+    socket.on("receive-ice-candidate", ({ candidate }) => {
+     // if all by A then This lets User B know about how to connect back to User A. wlse A
+      pc.current.addIceCandidate( );
+    });
+  }, []);
+
+  // 3. Create Offer
+  //this will run after the 'user-joined'
+  const callUser = async () => {
+    //this create offer ,which consist of video/mic 
+    //details about local media and contain your connection setup info
+    const offer = await pc.current.createOffer();
+    //this set the offer as local description , which tell the 
+    //browser what detail u want to send
+    await pc.current.setLocalDescription(offer);
+    //after this ice candiate works
+    
+    //after the execution of ice this works
+    //it send the offer to the user B
+     
+    socket.emit("send-offer", {
+      offer,
+      to: remoteSocketId,//user B's soket.id
+    });
+  };
+
+  return (
+    <div style={{ display: 'flex', gap: '1rem' }}>
+      <h1>{roomId}</h1>
+      <div>
+        <h3>You</h3>
+        <video ref={localVideo} autoPlay muted width="300" />
+      </div>
+      <div>
+        <h3>Friend</h3>
+        <video ref={remoteVideo} autoPlay width="300" />
+      </div>
+      <div>
+        <button onClick={callUser}>Start Call</button>
+      </div>
+    </div>
+  );
+};
+
+export default VideoCall;

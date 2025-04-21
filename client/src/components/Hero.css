@@ -1,0 +1,271 @@
+body{
+    margin:0;
+    padding: 0;
+}
+h1{
+    margin-top: 0;
+    
+}
+h2{
+    margin-top: 0;
+}
+.container{
+    position: relative;
+}
+.hero-main-container{
+    display: flex;
+    width: 98.5%;
+    align-items: center;
+    background-color:rgb(168, 208, 243);
+    padding: 10px;
+    gap: 2%;
+     
+  
+}
+.info-container{
+    width: 40%;
+}
+
+.image-container{
+    width: 58%;
+}
+
+.image-container img{
+ width: 100%;
+ border-radius: 10px;
+}
+
+.hero-button-container{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.hero-button-container button{
+    padding: 10px;
+    background-color:rgb(55, 139, 249);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.image-container-absolute{
+    width: 100%;
+    position: absolute;
+     
+}
+.image-container-absolute img{
+    display: flex;
+    position: relative;
+    width: 20%;
+    left: 40%;
+    bottom:100px;
+    border-radius: 50%;
+}
+
+ /*  hero-section2*/
+
+.main-container2{
+    display: flex;
+    width: 98.5%;
+    align-items: center;
+    background-color:rgb(168, 208, 243);
+    padding: 10px;
+    gap: 2%;
+  
+}
+
+.info-container2{
+    width: 40%;
+}
+
+.info-container2 ul{
+    list-style-type:none;
+}
+
+.info-container2 ul li img{
+    width:20px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+.image-container2{
+    width: 58%;
+}
+
+.image-container2 img{
+ width: 100%;
+ border-radius: 10px;
+}
+
+.hero-button-container2{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-button-container2 button{
+    padding: 10px;
+    background-color:rgb(55, 139, 249);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* pop up form */
+@keyframes slideFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-100%) translateX(-100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(-20%) translateX(-50%);
+    }
+  }
+  
+  .meetingForm {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -20%);
+    width: 320px;
+    padding: 20px;
+    background: #e1f5fe;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    animation: slideFadeIn 0.4s ease-out;
+    z-index: 999;
+  }
+  
+  .meetingForm span {
+    align-self: flex-end;
+    cursor: pointer;
+    color: #e53935;
+    font-size: 20px;
+    transition: transform 0.2s ease;
+  }
+  
+  .meetingForm span:hover {
+    transform: scale(1.2);
+  }
+  
+  .meetingForm label {
+    font-weight: 500;
+    margin-bottom: 3px;
+    color: #333;
+  }
+  
+  .meetingForm input {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    outline: none;
+    font-size: 15px;
+    transition: border 0.3s ease;
+  }
+  
+  .meetingForm input:focus {
+    border-color: #29b6f6;
+    box-shadow: 0 0 5px #81d4fa;
+  }
+
+  .changeForm{
+    margin: 0;
+  }
+  .changeForm i{
+    color: blue;
+    cursor: pointer;
+  }
+  
+  .meetingForm button {
+    padding: 10px;
+    background-color: #29b6f6;
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 10px;
+  }
+  
+  .meetingForm button:hover {
+    background-color: #0288d1;
+    transform: scale(1.03);
+  }
+  
+
+@media(max-width:768px){
+    .hero-main-container{
+        display: flex;
+        flex-direction: column;
+    }
+    .info-container{
+        width: 90%;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        
+    }
+    .main-container2{
+        display: flex;
+        flex-direction: column;
+        
+          
+    }
+    .info-container2{
+        width: 90%;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        
+    }
+    .info-container2 ul{
+        text-align: left;
+    }
+    
+}
+
+@media (max-width:428px) {
+    .image-container{
+        width: 85%;
+    }
+    .image-container2{
+        width: 85%;
+    }
+    .image-container-absolute img{
+        display: flex;
+        position: absolute;
+        width: 30%;
+        right: 32%;
+        bottom: -70px;
+        border-radius: 50%;
+    }
+    
+}
+
+@media (max-width:320px){
+    .image-container-absolute img{
+        display: flex;
+        position: absolute;
+        width: 30%;
+        right: 30%;
+        bottom: -40px;
+        border-radius: 50%;
+    }
+}
+
+@media (max-width:350px){
+    .paragraph{
+        text-align: justify;
+    }
+    .info-container2 ul{
+        text-align: left;
+    }
+}
