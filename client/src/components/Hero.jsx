@@ -7,7 +7,7 @@ import heroImage4 from "../images/hero-image4.webp"
 import rightTike from "../images/right-tike.png"
 import "../components/Hero.css"
 
-const backendUrl = import.meta.env.BACKEND
+const backendUrl = import.meta.env.VITE_BACKEND
  
 function Hero() {
     const [showForm, setShowFrom] = useState(false)

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import io from "socket.io-client";
 
  
-const backendUrl = import.meta.env.BACKEND
+const backendUrl = import.meta.env.VITE_BACKEND
 const socket = io(backendUrl);
  
 
