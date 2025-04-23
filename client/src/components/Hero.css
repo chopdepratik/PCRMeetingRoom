@@ -41,14 +41,14 @@ p{
     width: 100%;
     border: solid 3px greenyellow;
     border-radius: 10px;
-    transform: translateX(100%) translateY(-100%);
+    transform:   translateY(-100%);
     animation: slideImg1 1.5s ease-in forwards; /* add "forwards" to keep final state */
     opacity: 0;
 }
 
 @keyframes slideImg1 {
     to {
-        transform: translateX(0%) translateY(0%);
+        transform:  translateY(0%);
         opacity: 1;
     }
 }
