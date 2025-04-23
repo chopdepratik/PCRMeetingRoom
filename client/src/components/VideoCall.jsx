@@ -33,12 +33,12 @@ const VideoCall = ({user}) => {
   const [meetStarted, setMeetStarted] = useState(false)
 
   const getHost = async()=>{
-    console.log(roomId)
+     
     try {
       const response = await axios.post(`${backendUrl}/api/v2/room/gethost`,{
         roomId:roomId
       });
-      console.log("response from host find",response)
+       
       if(response.data?.success){
         setHost(response.data.host.hostName)
       }

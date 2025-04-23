@@ -9,8 +9,13 @@ h1{
 h2{
     margin-top: 0;
 }
+p{
+    margin-top: 5px;
+}
 .container{
+    margin-top: 5px;
     position: relative;
+   
 }
 .hero-main-container{
     display: flex;
@@ -32,12 +37,21 @@ h2{
      
 }
 
-.image-container img{
- width: 100%;
- border: solid 3px greenyellow;
- border-radius: 10px;
+.image-container img {
+    width: 100%;
+    border: solid 3px greenyellow;
+    border-radius: 10px;
+    transform: translateX(100%) translateY(-100%);
+    animation: slideImg1 1.5s ease-in forwards; /* add "forwards" to keep final state */
+    opacity: 0;
 }
 
+@keyframes slideImg1 {
+    to {
+        transform: translateX(0%) translateY(0%);
+        opacity: 1;
+    }
+}
 .hero-button-container{
     display: flex;
     width: 100%;
@@ -70,8 +84,20 @@ h2{
     bottom:100px;
     border: solid 3px greenyellow;
     border-radius: 50%;
+    z-index: 1;
+    animation : glowAbso 2s ease-in-out  alternate infinite;
 }
-
+@keyframes glowAbso {
+    0% {
+        box-shadow: 0px 0px 4px 2px greenyellow;
+    }
+    50% {
+        box-shadow: 0px 0px 12px 6px greenyellow;
+    }
+    100% {
+        box-shadow: 0px 0px 4px 2px greenyellow;
+    }
+}
  /*  hero-section2*/
 
 .main-container2{
@@ -108,6 +134,16 @@ h2{
  width: 100%;
  border: solid 3px greenyellow;
  border-radius: 10px;
+ transform: translateX(-100%) translateY(100%);
+ animation: slideImg3 1.5s ease-in forwards; /* add "forwards" to keep final state */
+ opacity: 0;
+}
+
+@keyframes slideImg3 {
+ to {
+     transform: translateX(0%) translateY(0%);
+     opacity: 1;
+ }
 }
 
 .hero-button-container2{

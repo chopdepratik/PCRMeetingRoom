@@ -40,7 +40,7 @@ export const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        console.log('Email:', email); // Log email to verify the request is coming through
+         
         const user = await User.findOne({ email: email });
 
         if (!user) {
@@ -57,7 +57,7 @@ export const loginUser = async (req, res) => {
             });
         }
 
-        console.log('Creating token for user:', user._id); // Log before creating token
+       
         const token = await createToken(user._id, user.firstName);
 
         return res.status(200).json({

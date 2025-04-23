@@ -55,7 +55,7 @@ export const joinRoom = async (req, res) => {
 export const getHost = async(req,res)=>{
     try {
         const {roomId} = req.body
-        console.log(roomId)
+         
 
         const room = await Room.findOne({roomId}).populate('hostName')
      

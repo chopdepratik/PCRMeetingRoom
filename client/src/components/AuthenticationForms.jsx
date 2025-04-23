@@ -65,8 +65,7 @@ function AuthenticationForms ({loginClick, setLoginClick, registerClick, setRegi
         setLoading(true)
         try {
             const {email, password} = formData
-            console.log(email, password)
-
+            
             const response = await axios.post(`${backendUrl}/api/v1/user/loginuser`,{
                 email,
                 password

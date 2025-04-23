@@ -22,7 +22,31 @@ p{
     box-sizing: border-box;
     padding: 10px 20px; /* Ensure spacing is handled properly */
     overflow: hidden;
-    border: solid 3px orange;
+    border: 1px solid orange;
+    animation: glowing 2s ease-in-out alternate infinite, slideIn 1s ease-out forwards;
+    transform: translateY(-100%);
+    transition: transform 1.5s ease-in-out;
+    opacity: 0;
+    z-index: 999;
+    
+    
+}
+
+
+@keyframes glowing{
+    0%{
+        box-shadow: 0px 0px 5px orange;
+    }
+    100%{
+        box-shadow: 0px 0px 20px orange;
+    }
+}
+
+@keyframes slideIn{
+    to{
+        transform: translateY(0%);
+        opacity: 1;
+    }
 }
 
 

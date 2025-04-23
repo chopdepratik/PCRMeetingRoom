@@ -7,7 +7,7 @@ function Header({scrollToFooter, scrollToAbout, isLogin , setIsLogin}) {
     const [registerClick, setRegisterClick] = useState(false)
     const [showNav, setShowNav] = useState(false)
 
-    console.log("printing for header :",isLogin)
+    
     const loginClicked = ()=>{
         setLoginClick(true)
         setRegisterClick(false)
