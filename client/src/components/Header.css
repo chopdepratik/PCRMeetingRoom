@@ -23,7 +23,7 @@ p{
     padding: 10px 20px; /* Ensure spacing is handled properly */
     overflow: hidden;
     border: 1px solid orange;
-    animation: glowing 2s ease-in-out alternate infinite, slideIn 1s ease-out forwards;
+    animation:slideIn 1s ease-out forwards;
     transform: translateY(-100%);
     transition: transform 1.5s ease-in-out;
     opacity: 0;
