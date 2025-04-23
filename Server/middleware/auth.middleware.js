@@ -6,6 +6,7 @@ import User from '../model/user.model.js';
 
 export const createToken = (id, firstName)=>{
     const secret =process.env.SECRET_KEY // this will be accessible
+    console.log(secret)
     
     const token = jwt.sign(
         {
@@ -23,6 +24,7 @@ export const createToken = (id, firstName)=>{
 
 export const isAuthenticated = async(req, res, next)=>{
     const secret =process.env.SECRET_KEY 
+    console.log(secret)
     try {
         const token = await req.headers.authorization?.split(" ")[1]
 
