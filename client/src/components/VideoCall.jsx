@@ -178,6 +178,8 @@ const VideoCall = ({user}) => {
 
   return (
     <div className="call-container">
+      <p style={{margin:'0px'}}>RoomId : {roomId}</p>
+      <i >copy and send to other user</i>
   <div className="video-section">
     <div className={`video-box local-video ${isFriendMaximized ? 'minimized' : ''}`}>
     <video
@@ -236,9 +238,9 @@ const VideoCall = ({user}) => {
     </div>
   </div>
 
-  <div className="chat-section">
+  {/* <div className="chat-section">
     <div className="messages">
-      {/* Replace with actual messages */}
+      
       <p className="message sender">Hi!</p>
       <p className="message receiver">Hey there!</p>
     </div>
@@ -246,7 +248,7 @@ const VideoCall = ({user}) => {
       <input type="text" placeholder="Type your message..." />
       <button>Send</button>
     </div>
-  </div>
+  </div> */}
 
   <div className="controls">
     {
