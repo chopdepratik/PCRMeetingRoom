@@ -14,8 +14,7 @@ app.use(cors());
  
 
 const mongoURL = process.env.MONGO_URL
-
-
+console.log(mongoURL)
 app.use("/api/v1/user",userRouter)
 app.use("/api/v2/room", roomRouter);
 
