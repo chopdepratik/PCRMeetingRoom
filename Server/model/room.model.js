@@ -1,9 +1,12 @@
 import mongoose from 'mongoose';
 
 const roomSchema = mongoose.Schema({
+    userName:{
+        type:String,
+    },
     hostName: {
-        type: String,
-        required: true
+        type: mongoose.Schema.ObjectId,
+        ref:'Users'
     },
     roomId: {
         type: String,

@@ -74,9 +74,15 @@ function Hero({isLogin}) {
     
         if (!joinClick) {
             setLoading(true)
+            const token = localStorage.getItem('token')
             try {
-                const response = await axios.post(`${backendUrl}/api/v2/room/createroom`, {
-                    hostName: userName,
+                const response = await axios.post(`${backendUrl}/api/v2/room/createroom`,  {
+                    userName: userName, // body data
+                  },
+                  {
+                    headers: {
+                      Authorization: `Bearer ${token}`, // headers go here
+                    },
                 });
                 if(response.data){
                     const newRoomId = response.data.roomId; // ✅ renamed to avoid conflict

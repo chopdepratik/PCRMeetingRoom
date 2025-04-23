@@ -1,28 +1,69 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 import io from "socket.io-client";
 import '../components/VideoCall.css'
- 
+import videoImg from '../images/video-camera.png'
+import noVideoImg from '../images/no-video.png'
+import micImg from '../images/recorder-microphone.png'
+import noMicImg from '../images/mute.png'
+import userImg from '../images/user.png'
+import axios from "axios";
+
 const backendUrl = import.meta.env.VITE_BACKEND
 const socket = io(backendUrl);
  
 
-const VideoCall = () => {
+const VideoCall = ({user}) => {
   const { roomId } = useParams();
   const [remoteUser, setRemoteUser] = useState('');
+  const localStream = useRef(null)
+  const remoteStream = useRef(null)
   const localVideo = useRef(null);
   const remoteVideo = useRef(null);
   const pc = useRef(null);
+  const [isFriendMaximized, setIsFriendMaximized] = useState(false);
+  const [isVideoOn, setIsVideoOn] = useState(true);
+  const [isAudioOn, setIsAudioOn] = useState(true);
+  const [isRemoteVideoOn, setIsRemoteVideoOn] = useState(true);
+  const [host, setHost] = useState({})
+  const [currectUser, setCurrentUser] = useState(user)
+  const [otherUserData, setOtherUserData] = useState({})
+  const [meetStarted, setMeetStarted] = useState(false)
+
+  const getHost = async()=>{
+    console.log(roomId)
+    try {
+      const response = await axios.post(`${backendUrl}/api/v2/room/gethost`,{
+        roomId:roomId
+      });
+      console.log("response from host find",response)
+      if(response.data?.success){
+        setHost(response.data.host.hostName)
+      }
+    } catch (error) {
+      console.log("from videoCall", error)
+      console.error("error: ",error.message)
+    }
+  }
+
+  useEffect(()=>{
+    getHost()
+  },[])
 
   useEffect(() => {
-    socket.emit('user-join', { roomId });
+    socket.emit('user-join', { roomId,currectUser });
 
-    socket.on('user-joined', ({ userId }) => {
+    socket.on('user-joined', ({ userId ,otherUser}) => {
       setRemoteUser(userId);
+      setOtherUserData(otherUser)
+      toast.info('User joined the room ')
     });
 
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       .then((stream) => {
+        localStream.current = stream
         localVideo.current.srcObject = stream;
 
         pc.current = new RTCPeerConnection();
@@ -32,7 +73,23 @@ const VideoCall = () => {
         });
 
         pc.current.ontrack = (event) => {
+          remoteStream.current = event.streams[0];
+          toast.success("Meet started succesfully")
           remoteVideo.current.srcObject = event.streams[0];
+
+          const videoTrack = remoteStream.current.getVideoTracks()[0];
+
+          if (videoTrack) {
+            setIsRemoteVideoOn(videoTrack.enabled);
+
+            videoTrack.onmute = () => {
+              setIsRemoteVideoOn(false);
+            };
+
+            videoTrack.onunmute = () => {
+              setIsRemoteVideoOn(true);
+            };
+         }
         };
 
         pc.current.onicecandidate = (event) => {
@@ -67,25 +124,115 @@ const VideoCall = () => {
       await pc.current.setRemoteDescription(new RTCSessionDescription(answer));
     });
 
+    socket.on('leavedRoom',({userName})=>{
+      toast.info(`${userName} leaved the Meet`)
+      window.location.href = '/';
+    })
+
+    socket.on('meetingEnded', () => {
+      alert("The meeting has been ended by the host.");
+      // Navigate away or close the meeting UI
+      window.location.href = '/'; // or any route
+    });
+
   }, [remoteUser, roomId]);
 
   const startCall = async () => {
+    setMeetStarted(true)
     const offer = await pc.current.createOffer();
     await pc.current.setLocalDescription(offer);
 
     socket.emit('send-offer', { offer, to: remoteUser });
   };
 
+  const toggleVideo = ()=>{
+     const track = localStream.current.getVideoTracks()[0];
+      if( track){
+        track.enabled = !track.enabled
+        setIsVideoOn((prev)=>!prev)
+      }
+  }
+
+  const toggleAudio = ()=>{
+    const track = localStream.current.getAudioTracks()[0];
+     if( track){
+       track.enabled = !track.enabled
+       setIsAudioOn((prev)=>!prev)
+     }
+ }
+
+ const leaveMeet = ()=>{
+  socket.emit('leaveRoom', {
+    roomId,
+    userName: currectUser.firstName // or correctUser['firstName'] if needed
+  });
+  
+ }
+
+ const endMeet = ()=>{
+  socket.emit('endMeeting',{roomId})
+ }
+ 
+ 
+ 
+
   return (
     <div className="call-container">
   <div className="video-section">
-    <div className="video-box local-video">
-      <video ref={localVideo} autoPlay playsInline muted />
-      <p>You</p>
+    <div className={`video-box local-video ${isFriendMaximized ? 'minimized' : ''}`}>
+    <video
+    ref={localVideo}
+    autoPlay
+    playsInline
+    muted
+    style={{ display: isVideoOn ? 'block' : 'none' }}
+  />
+  {!isVideoOn && 
+         <div className="userImg-container">
+             <img src={userImg} alt="User avatar" className="userImg" />
+         </div>
+  }
+  
+       
+      <div className="name-container">
+        <p>You</p>
+        <div className="audio-video-toggle">
+          <div className="sub-audio-video-toggle">
+          <p onClick={toggleVideo}>
+            {
+              isVideoOn ? <img src={videoImg} alt=""  />
+              : <img src={noVideoImg} alt=""  />
+            } 
+           </p> 
+          <p onClick={toggleAudio}>
+            {
+              isAudioOn ? <img src={micImg} alt=""  />
+              : <img src={noMicImg} alt=""  />
+            } 
+          </p>
+          </div>
+
+
+        </div>
+      </div>
     </div>
-    <div className="video-box remote-video">
-      <video ref={remoteVideo} autoPlay playsInline />
-      <p>Friend</p>
+    <div className={`video-box remote-video ${isFriendMaximized ? 'maximized' : ''}`}>
+    <video
+    ref={remoteVideo}
+    autoPlay
+    playsInline
+    
+    style={{ display: isRemoteVideoOn ? 'block' : 'none' }}
+  />
+  {!isRemoteVideoOn && 
+         <div className="userImg-container">
+             <img src={userImg} alt="User avatar" className="userImg" />
+         </div>
+  }
+       <div className="name-container">
+        <p>{otherUserData?.firstName || 'User'}</p>
+        <p onClick={() => setIsFriendMaximized(!isFriendMaximized)} >[   ]</p> 
+       </div>
     </div>
   </div>
 
@@ -102,9 +249,17 @@ const VideoCall = () => {
   </div>
 
   <div className="controls">
-    <button onClick={startCall}>Start Meet</button>
-    <button>End Meet</button>
+    {
+      host._id === currectUser._id ? remoteUser ?<button onClick={startCall}>Start Meet</button>:<p>wait while other user Join room</p>
+      : <p>Waiting for host to start meet</p>
+    }
+     {
+       meetStarted ?host._id === currectUser._id ? <button onClick={endMeet}>End room</button> : <button onClick={leaveMeet}>Leave Meet</button>
+      : <button onClick={leaveMeet}>Leave Room</button>
+     }
+     
   </div>
+  <ToastContainer />
 </div>
 
   );

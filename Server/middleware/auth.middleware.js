@@ -43,7 +43,9 @@ export const isAuthenticated = async(req, res, next)=>{
                 })
             }
 
+            console.log("is authenticate")
             req.user = await User.findById(user.id)
+            console.log("is authenticate",req.user)
             next()
         })
     } catch (err) {

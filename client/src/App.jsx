@@ -8,11 +8,14 @@ import About from "./components/About.jsx"
 import VideoCall from '../src/components/VideoCall.jsx'
 import axios from "axios";
 
+const backendUrl = import.meta.env.VITE_BACKEND
+
 
 function App() {
   const footerRef = useRef(null);
   const aboutRef = useRef(null);
   const [isLogin, setIsLogin] = useState(false)
+  const [user, setUser] = useState({})
 
   const scrollToFooter = () => {
     footerRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -31,7 +34,7 @@ function App() {
           return;
         }
   
-        const response = await axios.get("http://localhost:5000/api/v1/user/isloginuser", {
+        const response = await axios.get(`${backendUrl}/api/v1/user/isloginuser`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -39,6 +42,7 @@ function App() {
   
         console.log("Login check response:", response.data);
         setIsLogin(response.data?.islogin || false);
+        setUser(response.data.user)
       } catch (err) {
         console.error("Error checking login:", err.message);
         setIsLogin(false);
@@ -56,8 +60,9 @@ function App() {
 
   return (
     <Router>
-        <VideoCall />
-        {/* <Routes>
+      {/* <VideoCall /> */}
+        
+        <Routes>
           <Route  path="/" element={
             <>
               <Header scrollToFooter={scrollToFooter}  scrollToAbout={scrollToAbout} isLogin= {isLogin} setIsLogin={(value)=>setIsLogin(value)}/>
@@ -68,8 +73,8 @@ function App() {
             </>
               
             }/>
-          <Route  path="/room/:roomId" element={<VideoCall/>}/>
-        </Routes> */}
+          <Route  path="/room/:roomId" element={<VideoCall user={user}/>}/>
+        </Routes>
     </Router>
      
       

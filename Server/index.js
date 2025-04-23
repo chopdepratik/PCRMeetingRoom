@@ -14,7 +14,7 @@ app.use(cors());
  
 
 const mongoURL = process.env.MONGO_URL
-console.log(mongoURL)
+ 
 app.use("/api/v1/user",userRouter)
 app.use("/api/v2/room", roomRouter);
 
@@ -28,9 +28,15 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
-  socket.on('user-join', ({ roomId }) => {
+  socket.on('leaveRoom',({roomId, userName})=>{
+    socket.leave(roomId)
+    
+    io.to(roomId).emit("leavedRoom", {userName});
+  });
+
+  socket.on('user-join', ({ roomId ,currectUser}) => {
     socket.join(roomId);
-    socket.to(roomId).emit('user-joined', { userId: socket.id, roomId });
+    socket.to(roomId).emit('user-joined', { userId: socket.id, otherUser:currectUser});
   });
 
   socket.on('send-ice-candidate', ({ candidate, to }) => {
@@ -44,6 +50,29 @@ io.on("connection", (socket) => {
   socket.on('send-answer', ({ answer, to }) => {
     socket.to(to).emit('receive-answer', { answer, from: socket.id });
   });
+
+   
+   
+  
+  socket.on('endMeeting', ({ roomId }) => {
+    // Get all sockets in the room
+    const roomSockets = io.sockets.adapter.rooms.get(roomId);
+    
+    if (roomSockets) {
+      for (const socketId of roomSockets) {
+        const s = io.sockets.sockets.get(socketId);
+        if (s) {
+          s.leave(roomId); // remove from room
+          s.emit('meetingEnded'); // notify client
+        }
+      }
+    }
+
+    
+
+    console.log(`Meeting with ID ${roomId} has ended`);
+  });
+  
 });
 
 mongoose.connect(mongoURL)
