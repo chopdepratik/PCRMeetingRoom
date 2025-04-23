@@ -1,0 +1,122 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .call-container {
+    width: 100%;
+    padding: 15px;
+    background-color: #f3f6f9;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    gap: 15px;
+  }
+  
+  /* === Video Section === */
+  .video-section {
+    display: flex;
+    width: 100%;
+    height: 50vh;
+    gap: 15px;
+    border-radius: 12px;
+  }
+  
+  .video-box {
+    background-color: black;
+    color: white;
+    width: 50%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .video-box video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .video-box p {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+  }
+  
+  /* === Chat Section === */
+  .chat-section {
+    flex: 1;
+    border: 1px solid rgb(173, 216, 255);
+    background-color: #e7f6ff;
+    border-radius: 12px;
+    padding: 15px;
+    max-height: 30vh;
+    overflow-y: auto;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* === Controls === */
+  .controls {
+    padding: 15px 0;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    border-top: 1px solid #ddd;
+    border-radius: 12px;
+  }
+  
+  .controls button {
+    padding: 12px 24px;
+    background-color: #198754;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .controls button:hover {
+    background-color: #4fa47c;
+  }
+  
+  .controls button:nth-child(2) {
+    background-color: #dc3545;
+  }
+  
+  .controls button:nth-child(2):hover {
+    background-color: #ee6774;
+  }
+  
+  /* === Responsive === */
+  @media (max-width: 780px) {
+    .video-section {
+      flex-direction: column;
+      height: auto;
+    }
+  
+    .video-box {
+      width: 100%;
+      height: 45vh;
+    }
+  
+    .chat-section {
+      max-height: 25vh;
+    }
+  
+    .controls {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+  

@@ -13,7 +13,7 @@ const Footer = forwardRef((props, ref) => {
         </p>
 
         <div className="quick-links-container">
-          <div className="quick-links">
+          {/* <div className="quick-links">
             <h4>Quick Links</h4>
             <ul className="footer-ul">
               <li>Features</li>
@@ -22,12 +22,12 @@ const Footer = forwardRef((props, ref) => {
               <li>Support</li>
               <li>Privacy Policy</li>
             </ul>
-          </div>
+          </div> */}
           <div className="contact-us">
             <h4>Contact Us</h4>
             <ul className="footer-ul">
-              <li>Email: support@pcrmeet.com</li>
-              <li>Phone: +91 98765 43210</li>
+              <li>Email: chopdepratik60@gmail.com</li>
+              <li>Phone: +91 9021289506</li>
               <li>Address: Nagpur, India</li>
             </ul>
           </div>

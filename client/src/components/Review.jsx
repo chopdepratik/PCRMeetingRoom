@@ -40,7 +40,7 @@ function Review() {
     
     return (
         <section className="review-section">
-            <h2>Customer Reviews</h2>
+            <h2 className="review-heading" >Customer Reviews</h2>
             <div className="review-main-container">
                 <button className="nav-btn prev-btn" onClick={prevSlide}>
                     <img src={leftArrow} alt="Previous" />

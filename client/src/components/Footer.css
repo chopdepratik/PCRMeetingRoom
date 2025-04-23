@@ -9,7 +9,7 @@ body{
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: aliceblue;
+    background-color: rgb(136, 197, 251);
     padding: 10px;
    
 }
@@ -18,7 +18,7 @@ body{
     text-align: center;
 }
 .footer-about{
-    width: 60%;
+    width: 90%;
     text-align: center;
     
 }
@@ -27,6 +27,11 @@ body{
     display: flex;
 }
 
+.footer-ul{
+    display: flex;
+    flex-direction: column;
+    
+}
 .footer-ul li{
     cursor: pointer;
     margin-top: 5px;
@@ -57,11 +62,20 @@ body{
         display: flex;
         flex-wrap: wrap;
     }
-    .follow-us ul li:nth-child(2){
+    /* .follow-us ul li:nth-child(2){
         margin-left: 50px;
     }
     .follow-us ul li:nth-child(3){
         margin-left: 50px;
+    } */
+    h1{
+        font-size: 1.8rem;
+    }
+    h2{
+        font-size: 1.4rem;
+    }
+    p{
+        font-size: 1rem;
     }
 
 }

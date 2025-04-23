@@ -1,6 +1,8 @@
 import { useState } from "react"
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 import heroImage from "../images/hero-image.png"
 import heroImage2 from "../images/hero-image2.png"
 import heroImage4 from "../images/hero-image4.webp"
@@ -9,23 +11,36 @@ import "../components/Hero.css"
 
 const backendUrl = import.meta.env.VITE_BACKEND
  
-function Hero() {
+function Hero({isLogin}) {
     const [showForm, setShowFrom] = useState(false)
     const [joinClick, setJoinClick] = useState(false)
     const [userName, setUserName] = useState('')
     const [roomId, setRoomId] = useState('')
+    const [loading, setLoading] = useState(false)
     
     const navigate = useNavigate();
 
     const hostMeeting = ()=>{
-        setShowFrom(true)
-        {joinClick ? setJoinClick(false):''}
+        if(isLogin){
+            setShowFrom(true)
+            {joinClick ? setJoinClick(false):''}
+        }else{
+            toast.error("Login first to host meeting",{
+                autoClose: 3000
+            })
+        }
+        
     }
-
-    const joinMeeting = ()=>{
-        setShowFrom(true)
-        setJoinClick(true)
-    }
+    const joinMeeting = () => {
+        if (isLogin) {
+          setShowFrom(true);
+          setJoinClick(true);
+        } else {
+           toast.error("Login first to join meeting",{
+            autoClose: 3000
+           })
+        }
+      };
 
     const closeForm = ()=>{
         setJoinClick(false)
@@ -38,34 +53,71 @@ function Hero() {
 
     const submitForm = async(e) => {
         e.preventDefault();
+        if(userName.trim() === ""){
+            toast.error("Please write your name", {
+                autoClose: 3000
+            });
+            return
+        }
+
+        
+       if( joinClick ){
+        if(roomId.trim() === ""){
+            toast.error("Please write room id", {
+                autoClose: 3000
+            });
+            return
+          }
+          
+        }
+         
     
         if (!joinClick) {
+            setLoading(true)
             try {
                 const response = await axios.post(`${backendUrl}/api/v2/room/createroom`, {
                     hostName: userName,
                 });
-                console.log(response.data);
-                const newRoomId = response.data.roomId; // ✅ renamed to avoid conflict
-                navigate(`/room/${newRoomId}`);
+                if(response.data){
+                    const newRoomId = response.data.roomId; // ✅ renamed to avoid conflict
+                    setLoading(false)
+                    toast.success(`${response.data.message}`)
+                    navigate(`/room/${newRoomId}`);
+                }
+                 
             } catch (error) {
+                setLoading(false)
+                
                 console.error(error.response?.data || error.message);
             }
         } else {
+            setLoading(true)
             try {
                 const response = await axios.post(`${backendUrl}/api/v2/room/joinroom`, {
                     hostName: userName,
                     roomId: roomId
                 });
-                console.log(response.data);
-                navigate(`/room/${roomId}`); // using state value directly
+                if(response.data?.success){ // if success false and status 404 then control go to catch block or if status 200 then go to else
+                    console.log(response.data);
+                    setLoading(false)
+                    toast.success(`${response.data.message}`)
+                    navigate(`/room/${roomId}`); // using state value directly
+                }else {
+                    setLoading(false)
+                    toast.error('Room does not exist')  
+                }
+                
             } catch (error) {
+                setLoading(false)
                 console.error(error.response?.data || error.message);
+                toast.error(error.response?.data?.message || 'Something went wrong')
             }
         }
     };
     
     return (
         <> 
+        <ToastContainer />
            <div className="container">
            <div className="hero-main-container">
                 <div className="info-container">
@@ -121,17 +173,31 @@ function Hero() {
             { showForm &&(<form action="" className="meetingForm">
                 <span onClick={closeForm}>X</span>
                  <label htmlFor="">Enter Your Name:</label>
-                 <input type="text" value={userName} onChange={(e)=>setUserName(e.target.value)}/>
+                 <input type="text" value={userName} onChange={(e)=>setUserName(e.target.value)} required/>
                 {
                     joinClick &&(
                         <> 
                             <label htmlFor="">Enter RoomId</label>
-                            <input type="text" value={roomId} onChange={(e)=>setRoomId(e.target.value)}/>
+                            <input type="text" value={roomId} onChange={(e)=>setRoomId(e.target.value)} required/>
                         </>
                     )
                 }
                 <p className="changeForm"  onClick={changeForm}>click here to  <i>{!joinClick ? 'join meeting':'host meeting'}</i> </p>
                 <button onClick={submitForm}>Submit</button>
+                {
+                                loading &&(
+                                    <div className="loader-container">
+                                        <div className="loader">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </div>
+                                        <p>wait while loading...</p>
+                                    </div>
+                                )
+                            }
              </form>)}
            </div>
             

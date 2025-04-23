@@ -14,11 +14,12 @@ h2{
 }
 .hero-main-container{
     display: flex;
-    width: 98.5%;
+    width: fit-content;
     align-items: center;
     background-color:rgb(168, 208, 243);
     padding: 10px;
     gap: 2%;
+    
      
   
 }
@@ -28,10 +29,12 @@ h2{
 
 .image-container{
     width: 58%;
+     
 }
 
 .image-container img{
  width: 100%;
+ border: solid 3px greenyellow;
  border-radius: 10px;
 }
 
@@ -50,6 +53,9 @@ h2{
     border-radius: 5px;
     cursor: pointer;
 }
+.hero-button-container button:hover{
+    background-color:rgb(66, 119, 188);
+}
 
 .image-container-absolute{
     width: 100%;
@@ -62,6 +68,7 @@ h2{
     width: 20%;
     left: 40%;
     bottom:100px;
+    border: solid 3px greenyellow;
     border-radius: 50%;
 }
 
@@ -69,7 +76,7 @@ h2{
 
 .main-container2{
     display: flex;
-    width: 98.5%;
+    width: fit-content;
     align-items: center;
     background-color:rgb(168, 208, 243);
     padding: 10px;
@@ -79,6 +86,9 @@ h2{
 
 .info-container2{
     width: 40%;
+}
+.info-container2 p{
+     text-align: justify;
 }
 
 .info-container2 ul{
@@ -96,6 +106,7 @@ h2{
 
 .image-container2 img{
  width: 100%;
+ border: solid 3px greenyellow;
  border-radius: 10px;
 }
 
@@ -113,7 +124,9 @@ h2{
     border-radius: 5px;
     cursor: pointer;
 }
-
+.hero-button-container2 button:hover{
+    background-color:rgb(66, 119, 188);
+}
 /* pop up form */
 @keyframes slideFadeIn {
     from {
@@ -246,6 +259,15 @@ h2{
         right: 32%;
         bottom: -70px;
         border-radius: 50%;
+    }
+    h1{
+        font-size: 1.8rem;
+    }
+    h2{
+        font-size: 1.4rem;
+    }
+    p{
+        font-size: 1rem;
     }
     
 }

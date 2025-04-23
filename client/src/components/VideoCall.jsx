@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from 'react-router-dom';
 import io from "socket.io-client";
-
+import '../components/VideoCall.css'
  
 const backendUrl = import.meta.env.VITE_BACKEND
 const socket = io(backendUrl);
@@ -78,14 +78,35 @@ const VideoCall = () => {
 
   return (
     <div className="call-container">
-      <div className="local-call">
-        <video ref={localVideo} autoPlay playsInline muted />
-      </div>
-      <div className="remote-call">
-        <video ref={remoteVideo} autoPlay playsInline />
-      </div>
-      <button onClick={startCall}>Start Call</button>
+  <div className="video-section">
+    <div className="video-box local-video">
+      <video ref={localVideo} autoPlay playsInline muted />
+      <p>You</p>
     </div>
+    <div className="video-box remote-video">
+      <video ref={remoteVideo} autoPlay playsInline />
+      <p>Friend</p>
+    </div>
+  </div>
+
+  <div className="chat-section">
+    <div className="messages">
+      {/* Replace with actual messages */}
+      <p className="message sender">Hi!</p>
+      <p className="message receiver">Hey there!</p>
+    </div>
+    <div className="chat-input">
+      <input type="text" placeholder="Type your message..." />
+      <button>Send</button>
+    </div>
+  </div>
+
+  <div className="controls">
+    <button onClick={startCall}>Start Meet</button>
+    <button>End Meet</button>
+  </div>
+</div>
+
   );
 };
 

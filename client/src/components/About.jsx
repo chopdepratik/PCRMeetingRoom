@@ -17,7 +17,7 @@ const About = forwardRef((props,ref)=>{
                           with low bandwidth consumption, instant meeting links, and secure communication, making
                            virtual interactions more efficient and productive."Let me know if you'd like any refinements
                     </p>
-                    <h2 style={{textAlign:'start'}}>Features</h2>
+                    <h2 style={{textAlign:'center'}}>Features</h2>
                     <div className="card-container">
                        
                         {features.map((data)=>{
@@ -35,7 +35,7 @@ const About = forwardRef((props,ref)=>{
                             )
                         })}
                     </div>
-                    <h2 style={{textAlign:'start', marginTop:'20px'}}>  Why Choose PCR Meet?  </h2>
+                    <h2 style={{textAlign:'center', marginTop:'20px'}}>  Why Choose PCR Meet?  </h2>
                     <div className="card-container">
                     {whyChooseUs.map((data)=>{
                             return(
@@ -53,7 +53,7 @@ const About = forwardRef((props,ref)=>{
                         })}
                     </div>
 
-                    <h2 style={{textAlign:'start', marginTop:'20px'}}>  Vision & Mission for PCR Meet </h2>
+                    <h2 style={{textAlign:'center', marginTop:'20px'}}>  Vision & Mission for PCR Meet </h2>
                     <div className="visi-card-container">
                     {visionMissionData.map((data)=>{
                             return(

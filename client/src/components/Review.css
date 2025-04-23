@@ -135,3 +135,14 @@ body {
         height: 35px;
     }
 }
+@media (max-width: 428px){
+    h1{
+        font-size: 1.8rem;
+    }
+    .review-section h2{
+        font-size: 1.4rem;
+    }
+    p{
+        font-size: 1rem;
+    }
+}

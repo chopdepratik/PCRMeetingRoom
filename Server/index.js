@@ -4,15 +4,20 @@ import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import roomRouter from './router/room.route.js';
+import userRouter from './router/user.route.js';
 import dotenv from 'dotenv'
+dotenv.config()
 
 const app = express();
 app.use(express.json());
 app.use(cors());
-dotenv.config()
+ 
 
-const mongoURL = process.env.mongoUrl
+const mongoURL = process.env.MONGO_URL
+console.log(process.env.MONGO_URL)
+console.log(process.env.SECRET_KEY)
 
+app.use("/api/v1/user",userRouter)
 app.use("/api/v2/room", roomRouter);
 
 const server = http.createServer(app);

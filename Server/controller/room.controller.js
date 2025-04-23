@@ -9,6 +9,7 @@ export const createRoom = async (req, res) => {
 
     if (existingRoom) {
         return res.status(400).json({
+            success:false,
             message: 'Room already exists, please try again',
         });
     }
@@ -16,24 +17,32 @@ export const createRoom = async (req, res) => {
     await Room.create({ hostName, roomId });
 
     return res.status(201).json({
+        success:true,
         message: 'Room created successfully',
         roomId,
     });
 };
 
 export const joinRoom = async (req, res) => {
-    const { roomId } = req.body;
+     try {
+        const { roomId } = req.body;
 
-    const room = await Room.findOne({ roomId });
+        const room = await Room.findOne({ roomId });
 
-    if (!room) {
-        return res.status(404).json({
-            message: 'Room does not exist, please check roomId',
+        if (!room) {
+            return res.status(404).json({
+                success:false,
+                message: 'Room does not exist, please check roomId',
+            });
+        }
+
+        return res.status(200).json({
+            success:true,
+            message: 'Joined room successfully',
+            roomId,
         });
-    }
-
-    return res.status(200).json({
-        message: 'Joined room successfully',
-        roomId,
-    });
+     } catch (error) {
+        console.log(error)
+        console.error("error: ",error.message)
+     }
 };

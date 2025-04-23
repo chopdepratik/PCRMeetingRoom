@@ -2,11 +2,12 @@ import logo from "../images/logo2.png"
 import "../components/Header.css"
 import AuthenticationForms from '../components/AuthenticationForms.jsx'
 import { useState } from "react";
-function Header({scrollToFooter, scrollToAbout}) {
+function Header({scrollToFooter, scrollToAbout, isLogin , setIsLogin}) {
     const [loginClick, setLoginClick] = useState(false)
     const [registerClick, setRegisterClick] = useState(false)
     const [showNav, setShowNav] = useState(false)
 
+    console.log("printing for header :",isLogin)
     const loginClicked = ()=>{
         setLoginClick(true)
         setRegisterClick(false)
@@ -15,6 +16,11 @@ function Header({scrollToFooter, scrollToAbout}) {
     const registerCliked = ()=>{
         setLoginClick(false)
         setRegisterClick(true)
+    }
+
+    const logoutHandle = ()=>{
+        localStorage.removeItem('token')
+        setIsLogin(false)
     }
     return (
         <>  
@@ -29,7 +35,11 @@ function Header({scrollToFooter, scrollToAbout}) {
                         <li>Home</li>
                         <li onClick={scrollToAbout}>About</li>
                         <li onClick={scrollToFooter}>Contact</li>
-                        <button onClick={loginClicked}>Login</button>
+                        {
+                    isLogin? <button className="login-button" onClick={logoutHandle}>LogOut</button>
+                    :
+                      <button className="login-button" onClick={loginClicked}>Login</button>  
+                }
                     </ul>
             </div>
             <div className="logo-container">
@@ -45,11 +55,19 @@ function Header({scrollToFooter, scrollToAbout}) {
             </nav>
 
              <div className="button-container">
-                <button className="login-button" onClick={registerCliked}>Register</button>
-                <button className="login-button" onClick={loginClicked}>Login</button>
+                {
+                    isLogin? <button className="login-button" onClick={logoutHandle}>LogOut</button>
+                    :
+                    <>
+                        <button className="login-button" onClick={registerCliked}>Register</button>
+                        <button className="login-button" onClick={loginClicked}>Login</button>
+                    </>
+                     
+                }
+                
              </div>
          </div>
-         <AuthenticationForms loginClick = {loginClick} setLoginClick = {setLoginClick} registerClick = {registerClick} setRegisterClick = {setRegisterClick}/>
+         <AuthenticationForms loginClick = {loginClick} setLoginClick = {setLoginClick} registerClick = {registerClick} setRegisterClick = {setRegisterClick} setIsLogin= {setIsLogin}/>
         </>
         
     );
