@@ -127,8 +127,10 @@ const VideoCall = ({user}) => {
     });
 
     socket.on('leavedRoom',({userName})=>{
-      setRemoteUser('')
       toast.info({userName}," Leaved the meet")
+      setRemoteUser('')
+      setOtherUserData({})
+        
     })
 
     socket.on('meetingEnded', () => {
