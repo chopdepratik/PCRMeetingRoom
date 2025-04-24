@@ -32,6 +32,7 @@ const VideoCall = ({ user }) => {
   const [otherUserData, setOtherUserData] = useState(null);
   const [meetStarted, setMeetStarted] = useState(false);
   const [mediaError, setMediaError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Fetch host information
   const getHost = async () => {
@@ -51,6 +52,7 @@ const VideoCall = ({ user }) => {
   // Initialize media streams and WebRTC connection
   const initializeMedia = async () => {
     try {
+      setIsLoading(true);
       const stream = await navigator.mediaDevices.getUserMedia({ 
         video: true, 
         audio: true 
@@ -61,11 +63,12 @@ const VideoCall = ({ user }) => {
         localVideo.current.srcObject = stream;
       }
 
-      // Initialize peer connection
+      // Initialize peer connection with proper configuration
       pc.current = new RTCPeerConnection({
         iceServers: [
           { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:stun1.l.google.com:19302' }
+          { urls: 'stun:stun1.l.google.com:19302' },
+          { urls: 'stun:stun2.l.google.com:19302' }
         ]
       });
 
@@ -74,23 +77,35 @@ const VideoCall = ({ user }) => {
         pc.current.addTrack(track, stream);
       });
 
-      // Set up event handlers
-      pc.current.ontrack = (event) => {
-        remoteStream.current = event.streams[0];
-        if (remoteVideo.current) {
-          remoteVideo.current.srcObject = event.streams[0];
-        }
-        setIsRemoteVideoOn(true);
-        setMeetStarted(true);
-        toast.success("Meet started successfully");
+      // Create new MediaStream for remote tracks
+      remoteStream.current = new MediaStream();
+      if (remoteVideo.current) {
+        remoteVideo.current.srcObject = remoteStream.current;
+      }
 
-        const videoTrack = event.streams[0]?.getVideoTracks()[0];
+      // Handle incoming tracks
+      pc.current.ontrack = (event) => {
+        event.streams[0].getTracks().forEach(track => {
+          remoteStream.current.addTrack(track);
+        });
+
+        // Check video track status
+        const videoTrack = remoteStream.current.getVideoTracks()[0];
+        setIsRemoteVideoOn(videoTrack?.enabled || false);
+
+        // Set up mute/unmute handlers
         if (videoTrack) {
           videoTrack.onmute = () => setIsRemoteVideoOn(false);
           videoTrack.onunmute = () => setIsRemoteVideoOn(true);
         }
+
+        if (!meetStarted) {
+          setMeetStarted(true);
+          toast.success("Meet started successfully");
+        }
       };
 
+      // ICE candidate handling
       pc.current.onicecandidate = (event) => {
         if (event.candidate && remoteUser) {
           socket.emit('send-ice-candidate', {
@@ -100,16 +115,20 @@ const VideoCall = ({ user }) => {
         }
       };
 
+      // Connection state monitoring
       pc.current.oniceconnectionstatechange = () => {
+        console.log('ICE connection state:', pc.current.iceConnectionState);
         if (pc.current.iceConnectionState === 'disconnected') {
           toast.info("Connection lost");
         }
       };
 
+      setIsLoading(false);
     } catch (err) {
       console.error("Media device error:", err);
       setMediaError("Could not access camera/microphone");
       toast.error("Camera/microphone access denied");
+      setIsLoading(false);
     }
   };
 
@@ -119,22 +138,83 @@ const VideoCall = ({ user }) => {
       localStream.current.getTracks().forEach(track => track.stop());
       localStream.current = null;
     }
+    if (remoteStream.current) {
+      remoteStream.current.getTracks().forEach(track => track.stop());
+      remoteStream.current = null;
+    }
     if (pc.current) {
       pc.current.close();
       pc.current = null;
+    }
+    if (localVideo.current) {
+      localVideo.current.srcObject = null;
+    }
+    if (remoteVideo.current) {
+      remoteVideo.current.srcObject = null;
     }
   };
 
   // Start the call
   const startCall = async () => {
     try {
-      const offer = await pc.current.createOffer();
+      if (!pc.current) {
+        await initializeMedia();
+      }
+
+      const offer = await pc.current.createOffer({
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: true
+      });
       await pc.current.setLocalDescription(offer);
-      socket.emit('send-offer', { offer, to: remoteUser });
+
+      socket.emit('send-offer', { 
+        offer, 
+        to: remoteUser 
+      });
+      
       setMeetStarted(true);
+      toast.info("Call initiated");
     } catch (err) {
       console.error("Error starting call:", err);
       toast.error("Failed to start call");
+    }
+  };
+
+  // Handle incoming offer
+  const handleReceiveOffer = async ({ offer, from }) => {
+    try {
+      setRemoteUser(from);
+      
+      if (!pc.current) {
+        await initializeMedia();
+      }
+
+      await pc.current.setRemoteDescription(new RTCSessionDescription(offer));
+
+      const answer = await pc.current.createAnswer();
+      await pc.current.setLocalDescription(answer);
+
+      socket.emit('send-answer', { 
+        answer, 
+        to: from 
+      });
+      
+      setMeetStarted(true);
+    } catch (err) {
+      console.error("Error handling offer:", err);
+      toast.error("Failed to handle incoming call");
+    }
+  };
+
+  // Handle incoming answer
+  const handleReceiveAnswer = async ({ answer }) => {
+    try {
+      if (!pc.current) return;
+      
+      await pc.current.setRemoteDescription(new RTCSessionDescription(answer));
+      setMeetStarted(true);
+    } catch (err) {
+      console.error("Error handling answer:", err);
     }
   };
 
@@ -204,31 +284,8 @@ const VideoCall = ({ user }) => {
       }
     });
 
-    socket.on('receive-offer', async ({ offer, from }) => {
-      if (!pc.current) return;
-      
-      setRemoteUser(from);
-      try {
-        await pc.current.setRemoteDescription(new RTCSessionDescription(offer));
-        const answer = await pc.current.createAnswer();
-        await pc.current.setLocalDescription(answer);
-        socket.emit('send-answer', { answer, to: from });
-        setMeetStarted(true);
-      } catch (err) {
-        console.error("Error handling offer:", err);
-      }
-    });
-
-    socket.on('receive-answer', async ({ answer }) => {
-      if (pc.current) {
-        try {
-          await pc.current.setRemoteDescription(new RTCSessionDescription(answer));
-          setMeetStarted(true);
-        } catch (err) {
-          console.error("Error handling answer:", err);
-        }
-      }
-    });
+    socket.on('receive-offer', handleReceiveOffer);
+    socket.on('receive-answer', handleReceiveAnswer);
 
     socket.on('leavedRoom', ({ userName }) => {
       toast.info(`${userName} left the meet`);
@@ -262,6 +319,8 @@ const VideoCall = ({ user }) => {
 
   return (
     <div className="call-container">
+      {isLoading && <div className="loading-overlay">Initializing media...</div>}
+      
       {host?._id === currentUser._id && (
         <div className="room-info">
           <p>Room ID: {roomId}</p>
@@ -273,7 +332,13 @@ const VideoCall = ({ user }) => {
         {/* Local Video */}
         <div className={`video-box local-video ${isFriendMaximized ? 'minimized' : ''}`}>
           {isVideoOn ? (
-            <video ref={localVideo} autoPlay playsInline muted />
+            <video 
+              ref={localVideo} 
+              autoPlay 
+              playsInline 
+              muted 
+              className="video-element"
+            />
           ) : (
             <div className="userImg-container">
               <img src={userImg} alt="User avatar" className="userImg" />
@@ -305,8 +370,13 @@ const VideoCall = ({ user }) => {
 
         {/* Remote Video */}
         <div className={`video-box remote-video ${isFriendMaximized ? 'maximized' : ''}`}>
-          {isRemoteVideoOn && remoteStream.current ? (
-            <video ref={remoteVideo} autoPlay playsInline className="remote-video" />
+          {isRemoteVideoOn ? (
+            <video 
+              ref={remoteVideo} 
+              autoPlay 
+              playsInline 
+              className="video-element remote-video-element"
+            />
           ) : (
             <div className="userImg-container">
               <img src={userImg} alt="User avatar" className="userImg" />
@@ -321,6 +391,7 @@ const VideoCall = ({ user }) => {
             <button 
               onClick={() => setIsFriendMaximized(!isFriendMaximized)}
               className="toggle-size-btn"
+              aria-label="Toggle video size"
             >
               {isFriendMaximized ? '[ ]' : '[  ]'}
             </button>
@@ -340,10 +411,10 @@ const VideoCall = ({ user }) => {
               </button>
             )
           ) : (
-            !meetStarted && <p>Waiting for other user to join...</p>
+            !meetStarted && <p className="status-message">Waiting for other user to join...</p>
           )
         ) : (
-          !meetStarted && <p>Waiting for host to start the meet...</p>
+          !meetStarted && <p className="status-message">Waiting for host to start the meet...</p>
         )}
 
         {meetStarted ? (
