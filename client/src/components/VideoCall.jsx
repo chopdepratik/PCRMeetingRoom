@@ -129,11 +129,11 @@ const VideoCall = ({user}) => {
 
 
       const handleBeforeUnload = () => {
-        host._id === currentUser._id ? socket.emit('endMeeting',{roomId})
+        host._id === currectUser._id ? socket.emit('endMeeting',{roomId})
          :
         socket.emit('leaveRoom', {
           roomId,
-          userName: currentUser.firstName
+          userName: currectUser.firstName
         });
       };
     
@@ -286,7 +286,7 @@ const VideoCall = ({user}) => {
 
 <div className="controls">
   {/* Primary action: Start / End / Waiting messages */}
-  {host._id === currentUser._id ? (
+  {host._id === currectUser._id ? (
     // ─── I am the host ───────────────────────────────────────
     remoteUser ? (
       // Other user is in the room
