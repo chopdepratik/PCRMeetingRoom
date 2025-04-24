@@ -253,13 +253,6 @@ const VideoCall = ({user}) => {
       </div>
     </div>
     <div className={`video-box remote-video ${isFriendMaximized ? 'maximized' : ''}`}>
-    <video
-    ref={remoteVideo}
-    autoPlay
-    playsInline
-    
-    style={{ display: isRemoteVideoOn  ? 'block' : 'none' }}
-  />
   {!isRemoteVideoOn || !remoteUser ? (
   <div className="userImg-container">
     <img src={userImg} alt="User avatar" className="userImg" />
@@ -308,7 +301,7 @@ const VideoCall = ({user}) => {
       )
     )
   ) : (
-    <p>{host._id === currectUser._id ? "Waiting for other user to join" : "Waiting for host to start the meet"}</p>
+    <p>{host._id === currectUser._id ?  !meetStarted && "Waiting for other user to join" : !meetStarted && "Waiting for host to start the meet"}</p>
   )}
 
   {!remoteUser && host._id !== currectUser._id && (
