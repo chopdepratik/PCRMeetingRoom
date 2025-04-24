@@ -26,7 +26,7 @@ const VideoCall = ({user}) => {
   const [isFriendMaximized, setIsFriendMaximized] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [isAudioOn, setIsAudioOn] = useState(true);
-  const [isRemoteVideoOn, setIsRemoteVideoOn] = useState(true);
+  const [isRemoteVideoOn, setIsRemoteVideoOn] = useState(false);
   const [host, setHost] = useState({})
   const [currectUser, setCurrentUser] = useState(user)
   const [otherUserData, setOtherUserData] = useState({})
@@ -80,17 +80,19 @@ const VideoCall = ({user}) => {
           toast.success("Meet started succesfully")
           remoteVideo.current.srcObject = event.streams[0];
 
+       
+
           const videoTrack = remoteStream.current.getVideoTracks()[0];
 
           if (videoTrack) {
-            setIsRemoteVideoOn(videoTrack.enabled);
+            setIsRemoteVideoOn((prev)=>!prev);
 
             videoTrack.onmute = () => {
-              setIsRemoteVideoOn(false);
+              setIsRemoteVideoOn((prev)=>!prev);
             };
 
             videoTrack.onunmute = () => {
-              setIsRemoteVideoOn(true);
+              setIsRemoteVideoOn((prev)=>!prev);
             };
          }
         };
@@ -254,7 +256,7 @@ const VideoCall = ({user}) => {
     
     style={{ display: isRemoteVideoOn  ? 'block' : 'none' }}
   />
-  {!isRemoteVideoOn && otherUserData ?
+  {!isRemoteVideoOn ?
          <div className="userImg-container">
              <img src={userImg} alt="User avatar" className="userImg" />
          </div>: ''
