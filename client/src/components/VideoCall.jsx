@@ -250,12 +250,12 @@ const VideoCall = ({user}) => {
     autoPlay
     playsInline
     
-    style={{ display: isRemoteVideoOn ? 'block' : 'none' }}
+    style={{ display: isRemoteVideoOn  ? 'block' : 'none' }}
   />
-  {!isRemoteVideoOn && 
+  {!isRemoteVideoOn && otherUserData ?
          <div className="userImg-container">
              <img src={userImg} alt="User avatar" className="userImg" />
-         </div>
+         </div>: ''
   }
        <div className="name-container">
         <p>{otherUserData?.firstName || 'User'}</p>
@@ -285,8 +285,10 @@ const VideoCall = ({user}) => {
   ) : (
     <p>Wait while other user joins the room</p>
   )
-) : (
-  <p>Waiting for host to start the meet</p>
+) : ( !meetStarted && (
+        <p>Waiting for host to start the meet</p>
+)
+   
 )}
 
 {meetStarted ? (
