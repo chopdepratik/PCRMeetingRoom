@@ -6,6 +6,7 @@ import cors from 'cors';
 import roomRouter from './router/room.route.js';
 import userRouter from './router/user.route.js';
 import dotenv from 'dotenv'
+import Room from './model/room.model.js';
 dotenv.config()
 
 const app = express();
@@ -54,8 +55,9 @@ io.on("connection", (socket) => {
     socket.to(to).emit('toogle-Video',{enabled})
   });
   
-  socket.on('endMeeting', ({ roomId }) => {
+  socket.on('endMeeting', async({ roomId }) => {
     // Get all sockets in the room
+    await Room.deleteOne({roomId:roomId})
     const roomSockets = io.sockets.adapter.rooms.get(roomId);
     
     if (roomSockets) {
