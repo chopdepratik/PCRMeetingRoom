@@ -31,6 +31,7 @@ const VideoCall = ({user}) => {
   const [currectUser, setCurrentUser] = useState(user)
   const [otherUserData, setOtherUserData] = useState({})
   const [meetStarted, setMeetStarted] = useState(false)
+  const [remoteStreamState, setRemoteStreamState] = useState(null);
 
   const getHost = async()=>{
      
@@ -76,23 +77,28 @@ const VideoCall = ({user}) => {
         });
 
         pc.current.ontrack = (event) => {
-          remoteStream.current = event.streams[0];
-          toast.success("Meet started succesfully")
-          remoteVideo.current.srcObject = event.streams[0];
-
-          const videoTrack = remoteStream.current.getVideoTracks()[0];
-
+          const stream = event.streams[0];
+          setRemoteStreamState(stream); // important!
+        
+          toast.success("Meet started successfully");
+        
+          if (remoteVideo.current) {
+            remoteVideo.current.srcObject = stream;
+          }
+        
+          const videoTrack = stream.getVideoTracks()[0];
+        
           if (videoTrack) {
             setIsRemoteVideoOn(videoTrack.enabled);
-
+        
             videoTrack.onmute = () => {
               setIsRemoteVideoOn(false);
             };
-
+        
             videoTrack.onunmute = () => {
               setIsRemoteVideoOn(true);
             };
-         }
+          }
         };
 
         pc.current.onicecandidate = (event) => {
@@ -291,12 +297,13 @@ const VideoCall = ({user}) => {
     !meetStarted ? (
       <button onClick={startCall}>Start Meet</button>
     ) : null
-  ) : (
+  ) : 
+   meetStarted?'':
     <p>Wait while other user joins the room</p>
-  )
-) : ( !meetStarted && (
+  
+) : ( meetStarted ? '':
         <p>Waiting for host to start the meet</p>
-)
+
    
 )}
 
