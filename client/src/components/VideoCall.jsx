@@ -125,8 +125,11 @@ const VideoCall = ({user}) => {
     });
 
     socket.on('leavedRoom',({userName})=>{
+      setRemoteUser('');
+      setOtherUserData({})
+      isRemoteVideoOn(false)
+      meetStarted(false)
       toast.info(`${userName} leaved the Meet`)
-      window.location.href = '/';
     })
 
     socket.on('meetingEnded', () => {
@@ -185,8 +188,13 @@ const VideoCall = ({user}) => {
 
   return (
     <div className="call-container">
-      <p style={{margin:'0px'}}>RoomId : {roomId}</p>
-      <i >copy and send to other user</i>
+      {
+          host._id === currectUser._id ? <>
+            <p style={{margin:'0px'}}>RoomId : {roomId}</p>
+            <i >copy and send to other user</i>
+          </> : ''
+      }
+       
   <div className="video-section">
     <div className={`video-box local-video ${isFriendMaximized ? 'minimized' : ''}`}>
     <video
