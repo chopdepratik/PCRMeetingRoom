@@ -26,7 +26,7 @@ const VideoCall = ({user}) => {
   const [isFriendMaximized, setIsFriendMaximized] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [isAudioOn, setIsAudioOn] = useState(true);
-  const [isRemoteVideoOn, setIsRemoteVideoOn] = useState(true);
+  const [isRemoteVideoOn, setIsRemoteVideoOn] = useState(false);
   const [host, setHost] = useState({})
   const [currectUser, setCurrentUser] = useState(user)
   const [otherUserData, setOtherUserData] = useState({})
@@ -54,10 +54,10 @@ const VideoCall = ({user}) => {
 
   useEffect(() => {
     const handleUserJoined = ({ userId ,otherUser}) => {
-      setRemoteUser(userId);
-      setOtherUserData(otherUser);
-      setMeetStarted(false); // Reset meet status
-      toast.info(`${otherUser.firstName} joined the room`)
+       setRemoteUser(userId);
+  setOtherUserData(otherUser);
+  setMeetStarted(false); // Reset meet status
+  toast.info(`${otherUser.firstName} joined the room`)
       }
     
     socket.emit('user-join', { roomId,currectUser });
@@ -160,6 +160,7 @@ const VideoCall = ({user}) => {
       socket.off('disconnected');
       window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('unload', handleBeforeUnload);
+       
     };
 
   }, [remoteUser, roomId]);
@@ -253,19 +254,18 @@ const VideoCall = ({user}) => {
       </div>
     </div>
     <div className={`video-box remote-video ${isFriendMaximized ? 'maximized' : ''}`}>
-  {!isRemoteVideoOn || !remoteUser ? (
-  <div className="userImg-container">
-    <img src={userImg} alt="User avatar" className="userImg" />
-  </div>
-) : (
-  <video
-    ref={remoteVideo}
-    autoPlay
-    playsInline
-    style={{ display: isRemoteVideoOn ? 'block' : 'none' }}
-  />
-)}
-
+    { isRemoteVideoOn ? (
+    <video
+      ref={remoteVideo}
+      autoPlay
+      playsInline
+      className="remote-video"
+    />
+  ) : (
+    <div className="userImg-container">
+      <img src={userImg} alt="User avatar" className="userImg" />
+    </div>
+) }
        <div className="name-container">
         <p>{otherUserData?.firstName || 'User'}</p>
         <p onClick={() => setIsFriendMaximized(!isFriendMaximized)} >[   ]</p> 
@@ -285,33 +285,34 @@ const VideoCall = ({user}) => {
     </div>
   </div> */}
 
-<div className="controls">
-  {remoteUser ? (
-    host._id === currectUser._id ? (
-      !meetStarted ? (
-        <button onClick={startCall}>Start Meet</button>
-      ) : (
-        <button onClick={endMeet}>End Meet</button>
-      )
-    ) : (
-      !meetStarted ? (
-        <p>Waiting for host to start the meet</p>
-      ) : (
-        <button onClick={leaveMeet}>Leave Meet</button>
-      )
-    )
+  <div className="controls">
+  {host._id === currectUser._id ? (
+  remoteUser ? (
+    !meetStarted ? (
+      <button onClick={startCall}>Start Meet</button>
+    ) : null
   ) : (
-    <p>{host._id === currectUser._id ?  !meetStarted && "Waiting for other user to join" : !meetStarted && "Waiting for host to start the meet"}</p>
-  )}
+    <p>Wait while other user joins the room</p>
+  )
+) : ( !meetStarted && (
+        <p>Waiting for host to start the meet</p>
+)
+   
+)}
 
-  {!remoteUser && host._id !== currectUser._id && (
-    <button onClick={leaveMeet}>Leave Room</button>
-  )}
-</div>
-
+{meetStarted ? (
+  host._id === currectUser._id ? (
+    <button onClick={endMeet}>End Room</button>
+  ) : (
+    <button onClick={leaveMeet}>Leave Meet</button>
+  )
+) : (
+  <button onClick={leaveMeet}>Leave Room</button>
+)}
+     
+  </div>
   <ToastContainer />
 </div>
-
   );
 };
 

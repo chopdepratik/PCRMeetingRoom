@@ -30,7 +30,6 @@ io.on("connection", (socket) => {
 
   socket.on('leaveRoom',({roomId, userName})=>{
     socket.leave(roomId)
-    
     io.to(roomId).emit("leavedRoom", {userName});
   });
 
