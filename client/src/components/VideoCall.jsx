@@ -129,12 +129,20 @@ const VideoCall = ({user}) => {
 
 
       const handleBeforeUnload = () => {
-        host._id === currectUser._id ? socket.emit('endMeeting',{roomId})
+        host._id === currectUser._id ? 
+        socket.emit('endMeeting',{roomId})
+
          :
         socket.emit('leaveRoom', {
           roomId,
           userName: currectUser.firstName
         });
+        setTimeout(()=>{
+          window.location.href = '/';
+        } ,2000)
+        toast.success("Leaved Meet Successfully",{
+          autoClose:2000
+        })
       };
     
       window.addEventListener('beforeunload', handleBeforeUnload);
@@ -148,8 +156,8 @@ const VideoCall = ({user}) => {
       socket.off('peer-toggled-video');   // or "toogle-Video", whichever you choose
       socket.off('leavedRoom');
       socket.off('meetingEnded');
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      window.removeEventListener('popstate', handleBeforeUnload);
+      window.removeEventListener('beforeunload');
+      window.removeEventListener('popstate');
     };
 
   }, [remoteUser, roomId]);
