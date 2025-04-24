@@ -53,13 +53,15 @@ const VideoCall = ({user}) => {
   },[])
 
   useEffect(() => {
+    const handleUserJoined = ({ userId ,otherUser}) => {
+        setRemoteUser(userId);
+        setOtherUserData(otherUser)
+        toast.info('User joined the room ')
+      }
+    
     socket.emit('user-join', { roomId,currectUser });
 
-    socket.on('user-joined', ({ userId ,otherUser}) => {
-      setRemoteUser(userId);
-      setOtherUserData(otherUser)
-      toast.info('User joined the room ')
-    });
+    socket.on('user-joined', handleUserJoined);
 
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       .then((stream) => {
