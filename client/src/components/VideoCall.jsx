@@ -31,7 +31,6 @@ const VideoCall = ({user}) => {
   const [currectUser, setCurrentUser] = useState(user)
   const [otherUserData, setOtherUserData] = useState({})
   const [meetStarted, setMeetStarted] = useState(false)
-  const [remoteStreamState, setRemoteStreamState] = useState(null);
 
   const getHost = async()=>{
      
@@ -77,28 +76,24 @@ const VideoCall = ({user}) => {
         });
 
         pc.current.ontrack = (event) => {
-          const stream = event.streams[0];
-          setRemoteStreamState(stream); // important!
-        
-          toast.success("Meet started successfully");
-        
-          if (remoteVideo.current) {
-            remoteVideo.current.srcObject = stream;
-          }
-        
-          const videoTrack = stream.getVideoTracks()[0];
-        
+          remoteStream.current = event.streams[0];
+          toast.success("Meet started succesfully")
+          setIsRemoteVideoOn(true);
+          remoteVideo.current.srcObject = event.streams[0];
+
+          const videoTrack = remoteStream.current.getVideoTracks()[0];
+
           if (videoTrack) {
-            setIsRemoteVideoOn(videoTrack.enabled);
-        
+            
+
             videoTrack.onmute = () => {
               setIsRemoteVideoOn(false);
             };
-        
+
             videoTrack.onunmute = () => {
               setIsRemoteVideoOn(true);
             };
-          }
+         }
         };
 
         pc.current.onicecandidate = (event) => {
