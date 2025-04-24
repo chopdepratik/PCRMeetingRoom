@@ -58,6 +58,7 @@ const VideoCall = ({user}) => {
     socket.on('user-joined', ({ userId ,otherUser}) => {
       setRemoteUser(userId);
       setOtherUserData(otherUser)
+      meetStarted(false)
       toast.info('User joined the room ')
     });
 
@@ -81,13 +82,16 @@ const VideoCall = ({user}) => {
 
           if (videoTrack) {
             setIsRemoteVideoOn((prev)=>!prev);
+            console.log("while initial:" ,isRemoteVideoOn)
 
             videoTrack.onmute = () => {
               setIsRemoteVideoOn((prev)=>!prev);
+              console.log("while onmute:" ,isRemoteVideoOn)
             };
 
             videoTrack.onunmute = () => {
               setIsRemoteVideoOn((prev)=>!prev);
+              console.log("while unmute:" ,isRemoteVideoOn)
             };
          }
         };
