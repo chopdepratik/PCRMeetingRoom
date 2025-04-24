@@ -58,8 +58,8 @@ const VideoCall = ({user}) => {
     socket.on('user-joined', ({ userId ,otherUser}) => {
       setRemoteUser(userId);
       setOtherUserData(otherUser)
-      meetStarted(false)
-      toast.info('User joined the room ')
+      setMeetStarted(false)
+      toast.info(`${otherUser.firstName} joined the room`);
     });
 
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -77,23 +77,6 @@ const VideoCall = ({user}) => {
           remoteStream.current = event.streams[0];
           toast.success("Meet started succesfully")
           remoteVideo.current.srcObject = event.streams[0];
-
-          const videoTrack = remoteStream.current.getVideoTracks()[0];
-
-          if (videoTrack) {
-            setIsRemoteVideoOn((prev)=>!prev);
-            console.log("while initial:" ,isRemoteVideoOn)
-
-            videoTrack.onmute = () => {
-              setIsRemoteVideoOn((prev)=>!prev);
-              console.log("while onmute:" ,isRemoteVideoOn)
-            };
-
-            videoTrack.onunmute = () => {
-              setIsRemoteVideoOn((prev)=>!prev);
-              console.log("while unmute:" ,isRemoteVideoOn)
-            };
-         }
         };
 
         pc.current.onicecandidate = (event) => {
@@ -128,6 +111,8 @@ const VideoCall = ({user}) => {
       await pc.current.setRemoteDescription(new RTCSessionDescription(answer));
     });
 
+    socket.on("toogle-Video",({enabled})=>setIsRemoteVideoOn(enabled))
+
     socket.on('leavedRoom',({userName})=>{
       setRemoteUser('');
       setOtherUserData({})
@@ -158,6 +143,11 @@ const VideoCall = ({user}) => {
         track.enabled = !track.enabled
         setIsVideoOn((prev)=>!prev)
       }
+
+      socket.emit("peer-toggled-video", {
+        to: remoteUser,
+        enabled: track.enabled
+      });
   }
 
   const toggleAudio = ()=>{
@@ -272,7 +262,7 @@ const VideoCall = ({user}) => {
   <div className="controls">
     {
       host._id === currectUser._id ? remoteUser ? !meetStarted ?<button onClick={startCall}>Start Meet</button>: '':<p>wait while other user Join room</p>
-      : <p>Waiting for host to start meet</p>
+      : meetStarted ? '':<p>Waiting for host to start meet</p>
     }
      {
        meetStarted ?host._id === currectUser._id ? <button onClick={endMeet}>End room</button> : <button onClick={leaveMeet}>Leave Meet</button>

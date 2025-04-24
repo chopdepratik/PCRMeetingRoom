@@ -50,8 +50,9 @@ io.on("connection", (socket) => {
     socket.to(to).emit('receive-answer', { answer, from: socket.id });
   });
 
-   
-   
+  socket.on("peer-toggled-video", ({ to,enabled }) => {
+    socket.to(to).emit('toogle-Video',{enabled})
+  });
   
   socket.on('endMeeting', ({ roomId }) => {
     // Get all sockets in the room
