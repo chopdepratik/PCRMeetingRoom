@@ -72,6 +72,12 @@ io.on("connection", (socket) => {
 
     console.log(`Meeting with ID ${roomId} has ended`);
   });
+
+  socket.on('disconnect',()=>{
+    const {roomId } = socket;
+
+    io.to(roomId).emit('disconnected')
+  })
   
 });
 

@@ -138,8 +138,20 @@ const VideoCall = ({user}) => {
       // Navigate away or close the meeting UI.
       window.location.href = '/'; // or any route
     });
+
+    socket.on('disconnected',()=>leaveMeet())
+
+    const handleBeforeUnload = (e) => {
+      leaveMeet();  
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('unload', handleBeforeUnload);
+
     return () => {
       socket.off('user-joined', handleUserJoined); // Clean up listener
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('unload', handleBeforeUnload);
     };
 
   }, [remoteUser, roomId]);
@@ -265,14 +277,27 @@ const VideoCall = ({user}) => {
   </div> */}
 
   <div className="controls">
-    {
-      host._id === currectUser._id ? remoteUser ? !meetStarted ?<button onClick={startCall}>Start Meet</button>: '':<p>wait while other user Join room</p>
-      : <p>Waiting for host to start meet</p>
-    }
-     {
-       meetStarted ?host._id === currectUser._id ? <button onClick={endMeet}>End room</button> : <button onClick={leaveMeet}>Leave Meet</button>
-      : <button onClick={leaveMeet}>Leave Room</button>
-     }
+  {host._id === currectUser._id ? (
+  remoteUser ? (
+    !meetStarted ? (
+      <button onClick={startCall}>Start Meet</button>
+    ) : null
+  ) : (
+    <p>Wait while other user joins the room</p>
+  )
+) : (
+  <p>Waiting for host to start the meet</p>
+)}
+
+{meetStarted ? (
+  host._id === currectUser._id ? (
+    <button onClick={endMeet}>End Room</button>
+  ) : (
+    <button onClick={leaveMeet}>Leave Meet</button>
+  )
+) : (
+  <button onClick={leaveMeet}>Leave Room</button>
+)}
      
   </div>
   <ToastContainer />
