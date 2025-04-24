@@ -125,14 +125,18 @@ const VideoCall = ({user}) => {
     });
 
     socket.on('leavedRoom',({userName})=>{
-      toast.info(host._id === currectUser._id ? 'Host' : {userName}," Leaved the meet")
+      setRemoteUser('')
+      toast.info({userName}," Leaved the meet")
     })
 
     socket.on('meetingEnded', () => {
       alert("The meeting has been ended by the host.");
-      // Navigate away or close the meeting UI
+      // Navigate away or close the meeting UI.
       window.location.href = '/'; // or any route
     });
+    return () => {
+      socket.off('user-joined', handleUserJoined); // Clean up listener
+    };
 
   }, [remoteUser, roomId]);
 
