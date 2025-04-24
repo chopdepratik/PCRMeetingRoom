@@ -77,6 +77,7 @@ const VideoCall = ({user}) => {
           remoteStream.current = event.streams[0];
           toast.success("Meet started succesfully")
           remoteVideo.current.srcObject = event.streams[0];
+          setIsRemoteVideoOn(true);
         };
 
         pc.current.onicecandidate = (event) => {
@@ -116,8 +117,8 @@ const VideoCall = ({user}) => {
     socket.on('leavedRoom',({userName})=>{
       setRemoteUser('');
       setOtherUserData({})
-      isRemoteVideoOn(false)
-      meetStarted(false)
+      setIsRemoteVideoOn(false);
+      setMeetStarted(false)
       toast.info(`${userName} leaved the Meet`)
     })
 
@@ -125,7 +126,31 @@ const VideoCall = ({user}) => {
       alert("The meeting has been ended by the host.");
       // Navigate away or close the meeting UI
       window.location.href = '/'; // or any route
+
+
+      const handleBeforeUnload = () => {
+        host._id === currentUser._id ? socket.emit('endMeeting',{roomId})
+         :
+        socket.emit('leaveRoom', {
+          roomId,
+          userName: currentUser.firstName
+        });
+      };
+    
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      window.addEventListener('popstate', handleBeforeUnload);
     });
+    return () => {
+      socket.off('user-joined');
+      socket.off('receive-ice-candidate');
+      socket.off('receive-offer');
+      socket.off('receive-answer');
+      socket.off('peer-toggled-video');   // or "toogle-Video", whichever you choose
+      socket.off('leavedRoom');
+      socket.off('meetingEnded');
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('popstate', handleBeforeUnload);
+    };
 
   }, [remoteUser, roomId]);
 
@@ -259,18 +284,37 @@ const VideoCall = ({user}) => {
     </div>
   </div> */}
 
-  <div className="controls">
-    {
-      host._id === currectUser._id ? remoteUser ? !meetStarted ?<button onClick={startCall}>Start Meet</button>: '':<p>wait while other user Join room</p>
-      : meetStarted ? '':<p>Waiting for host to start meet</p>
-    }
-     {
-       meetStarted ?host._id === currectUser._id ? <button onClick={endMeet}>End room</button> : <button onClick={leaveMeet}>Leave Meet</button>
-      : <button onClick={leaveMeet}>Leave Room</button>
-     }
-     
-  </div>
-  <ToastContainer />
+<div className="controls">
+  {/* Primary action: Start / End / Waiting messages */}
+  {host._id === currentUser._id ? (
+    // ─── I am the host ───────────────────────────────────────
+    remoteUser ? (
+      // Other user is in the room
+      meetStarted ? (
+        <button onClick={endMeet}>End Meet</button>
+      ) : (
+        <button onClick={startCall}>Start Meet</button>
+      )
+    ) : (
+      // Waiting for the other user to join
+      <p>Waiting for other user to join…</p>
+    )
+  ) : (
+    // ─── I’m a participant ───────────────────────────────────
+    meetStarted ? (
+      <button onClick={leaveMeet}>Leave Meet</button>
+    ) : (
+      <p>Waiting for host to start the meet…</p>
+    )
+  )}
+
+  {/* Secondary action: Always allow leaving before the meeting starts */}
+  {!meetStarted && (
+    <button onClick={leaveMeet}>Leave Room</button>
+  )}
+</div>
+
+  <ToastContainer  preventDuplicates />
 </div>
 
   );
