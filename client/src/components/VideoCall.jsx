@@ -80,6 +80,7 @@ const VideoCall = ({user}) => {
           remoteStream.current = event.streams[0];
           toast.success("Meet started succesfully")
           remoteVideo.current.srcObject = event.streams[0];
+          setMeetStarted(true)
           setIsRemoteVideoOn(true);
         };
 
@@ -165,7 +166,7 @@ const VideoCall = ({user}) => {
   }, [remoteUser, roomId]);
 
   const startCall = async () => {
-    setMeetStarted(true)
+     
     const offer = await pc.current.createOffer();
     await pc.current.setLocalDescription(offer);
 
