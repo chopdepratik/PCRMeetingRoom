@@ -77,11 +77,14 @@ const VideoCall = ({user}) => {
 
         pc.current.ontrack = (event) => {
           remoteStream.current = event.streams[0];
+           
+          remoteVideo.current.srcObject = event.streams[0];
           toast.success("Meet started succesfully")
           setIsRemoteVideoOn(true);
-          remoteVideo.current.srcObject = event.streams[0];
+           
 
           const videoTrack = remoteStream.current.getVideoTracks()[0];
+          console.log(videoTrack.elabled)
 
           if (videoTrack) {
             
@@ -214,8 +217,15 @@ const VideoCall = ({user}) => {
 
   return (
     <div className="call-container">
-      <p style={{margin:'0px'}}>RoomId : {roomId}</p>
-      <i >copy and send to other user</i>
+      {
+       host._id === currectUser._id ?
+       <>
+           <p style={{margin:'0px'}}>RoomId : {roomId}</p>
+           <i >copy and send to other user</i>
+       </>
+       :''
+      }
+       
   <div className="video-section">
     <div className={`video-box local-video ${isFriendMaximized ? 'minimized' : ''}`}>
     <video
