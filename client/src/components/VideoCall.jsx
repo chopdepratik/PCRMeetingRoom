@@ -65,7 +65,10 @@ const VideoCall = ({user}) => {
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       .then((stream) => {
         localStream.current = stream
-        localVideo.current.srcObject = stream;
+        if(localStream.current){
+          localVideo.current.srcObject = stream;
+        }
+        
 
         pc.current = new RTCPeerConnection();
 
@@ -156,8 +159,7 @@ const VideoCall = ({user}) => {
       socket.off('peer-toggled-video');   // or "toogle-Video", whichever you choose
       socket.off('leavedRoom');
       socket.off('meetingEnded');
-      window.removeEventListener('beforeunload');
-      window.removeEventListener('popstate');
+      
     };
 
   }, [remoteUser, roomId]);
