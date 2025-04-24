@@ -161,7 +161,7 @@ const VideoCall = ({user}) => {
   }, [remoteUser, roomId]);
 
   const startCall = async () => {
-    setMeetStarted(true)
+    
     const offer = await pc.current.createOffer();
     await pc.current.setLocalDescription(offer);
 
@@ -285,7 +285,7 @@ const VideoCall = ({user}) => {
   remoteUser ? (
     !meetStarted ? (
       <button onClick={startCall}>Start Meet</button>
-    ) : null
+    ) : ''
   ) : (
     <p>Wait while other user joins the room</p>
   )
