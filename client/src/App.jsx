@@ -40,7 +40,7 @@ function App() {
           },
         });
   
-        console.log("Login check response:", response.data);
+        
         setIsLogin(response.data?.islogin || false);
         setUser(response.data.user)
       } catch (err) {

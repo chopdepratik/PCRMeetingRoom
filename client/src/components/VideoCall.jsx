@@ -125,8 +125,7 @@ const VideoCall = ({user}) => {
     });
 
     socket.on('leavedRoom',({userName})=>{
-      toast.info(`${userName} leaved the Meet`)
-      window.location.href = '/';
+      toast.info(host._id === currectUser._id ? 'Host' : {userName}," Leaved the meet")
     })
 
     socket.on('meetingEnded', () => {
@@ -166,6 +165,13 @@ const VideoCall = ({user}) => {
     roomId,
     userName: currectUser.firstName // or correctUser['firstName'] if needed
   });
+
+  setTimeout(()=>{
+    window.location.href = '/';
+  } ,3000)
+  toast.success("Leaved Meet Successfully",{
+    autoClose:3000
+  })
   
  }
 
@@ -252,7 +258,7 @@ const VideoCall = ({user}) => {
 
   <div className="controls">
     {
-      host._id === currectUser._id ? remoteUser ?<button onClick={startCall}>Start Meet</button>:<p>wait while other user Join room</p>
+      host._id === currectUser._id ? remoteUser ? !meetStarted ?<button onClick={startCall}>Start Meet</button>: '':<p>wait while other user Join room</p>
       : <p>Waiting for host to start meet</p>
     }
      {

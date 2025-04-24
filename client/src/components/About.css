@@ -11,7 +11,7 @@ button{
     display: flex;
     flex-direction: column;
     padding: 10px;
-    background-color: rgb(249, 247, 245);
+    background-image: linear-gradient(-45deg, rgb(170, 170, 228),rgb(144, 226, 251),white);
     
 }
 .about-main-container h2{
@@ -33,15 +33,14 @@ button{
     width:300px;
     height: 250px;
     margin-top: 10px;
-    border: 2px solid white;
     box-shadow: 0 0 5px 2px rgb(185, 183, 183);
     padding: 10px;
-    border-radius: 5px;
     transition: transform .2s ease-in-out;
     background-color:white;
     border: solid 3px greenyellow;
     animation: glow 2s ease-in-out alternate infinite;
     color: #555;
+    border-radius: 15px;
 }
 .about-card:hover{
     transform: translateY(-10px);
@@ -64,6 +63,7 @@ button{
     align-items: center;
     gap: 20px;
     color: #555;
+    
  
 }
  

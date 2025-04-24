@@ -22,31 +22,7 @@ p{
     box-sizing: border-box;
     padding: 10px 20px; /* Ensure spacing is handled properly */
     overflow: hidden;
-    border: 1px solid orange;
-    animation: glow 2s ease-in-out alternate infinite, slideIn 1s ease-out forwards;
-    transform: translateY(-100%);
-    transition: transform 1.5s ease-in-out;
-    opacity: 0;
-    z-index: 999;
-    
-    
-}
-
-
-@keyframes glow{
-    0%{
-        box-shadow: 0px 0px 5px orange;
-    }
-    100%{
-        box-shadow: 0px 0px 20px orange;
-    }
-}
-
-@keyframes slideIn{
-    to{
-        transform: translateY(0%);
-        opacity: 1;
-    }
+    border: solid 3px rgb(148, 202, 247);
 }
 
 
@@ -86,12 +62,14 @@ p{
     display: none;
     position: absolute;
     top:73px;
-    background-color: aliceblue;
+    background-color: white;
     width: 270px;
     margin-left: 5px;
     border-radius: 10px;
     border-top-left-radius: 0px;
     z-index: 2;
+    padding: 10px;
+    border: 1px solid black;
     animation:transform .5s ease-in-out;
     
 }
@@ -102,6 +80,10 @@ p{
     flex-direction: column;
     row-gap: 5px;
     cursor: pointer;
+    
+}
+.responsive-header ul li{
+    transition: transform .5 ease-in-out;
 }
 
 .responsive-header ul li:hover{
@@ -137,6 +119,10 @@ nav{
     justify-content: space-between;
     list-style: none;
     cursor: pointer;
+     
+}
+.nav-links li{
+    transition: transform .5s ease-in-out;
 }
 
 .nav-links li:hover{
@@ -212,5 +198,3 @@ nav{
         display: none !important;
     }
 }
-
- 

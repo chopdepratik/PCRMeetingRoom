@@ -16,14 +16,16 @@ p{
     margin-top: 5px;
     position: relative;
    
+   
 }
 .hero-main-container{
     display: flex;
     width: fit-content;
     align-items: center;
-    background-color:rgb(168, 208, 243);
     padding: 10px;
     gap: 2%;
+    
+    
     
      
   
@@ -104,7 +106,6 @@ p{
     display: flex;
     width: fit-content;
     align-items: center;
-    background-color:rgb(168, 208, 243);
     padding: 10px;
     gap: 2%;
   
