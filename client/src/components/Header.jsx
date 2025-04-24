@@ -2,6 +2,8 @@ import logo from "../images/logo2.png"
 import "../components/Header.css"
 import AuthenticationForms from '../components/AuthenticationForms.jsx'
 import { useState } from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 function Header({scrollToFooter, scrollToAbout, isLogin , setIsLogin}) {
     const [loginClick, setLoginClick] = useState(false)
     const [registerClick, setRegisterClick] = useState(false)
@@ -21,9 +23,11 @@ function Header({scrollToFooter, scrollToAbout, isLogin , setIsLogin}) {
     const logoutHandle = ()=>{
         localStorage.removeItem('token')
         setIsLogin(false)
+        toast.success("Logged off successfully")
     }
     return (
         <>  
+        <ToastContainer />
          <div className="header-container  ">
             <div className={`hamburger-container ${showNav ? 'open':''}`} onClick={()=>setShowNav(!showNav)}>
                 <span className="hamburger-line"></span>

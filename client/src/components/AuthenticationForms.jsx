@@ -56,6 +56,10 @@ function AuthenticationForms ({loginClick, setLoginClick, registerClick, setRegi
             setLoading(false)
 
         } catch (err) {
+             setLoading(false)
+             if(err.response.data?.success){
+                toast.info("User exist with Email Id")
+             }
             console.log('error',err.message)
         }
     }
@@ -85,6 +89,8 @@ function AuthenticationForms ({loginClick, setLoginClick, registerClick, setRegi
             setShowPasswordError(true)
             setLoading(false)
         } catch (error) {
+            setLoading(false)
+            toast.info(error.response.data?.message || "Something went Wrong!")
             console.log("error while login: ",error.message)
         }
 
